@@ -1,6 +1,7 @@
 package ru.javawebinar.topjava.service;
 
-import org.junit.Test;
+import org.junit.*;
+import org.junit.rules.*;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -13,6 +14,9 @@ import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertThrows;
 import static ru.javawebinar.topjava.MealTestData.*;
@@ -29,6 +33,29 @@ public class MealServiceTest {
 
     @Autowired
     private MealService service;
+
+    @Rule
+    public TestName testName = new TestName();
+    @Rule
+    public Stopwatch stopwatch = new Stopwatch();
+
+    private static Map<String, Long> testMap = new LinkedHashMap<>();
+
+    @After
+    public void result(){
+        String nameT = testName.getMethodName();
+        Long timeT = stopwatch.runtime(TimeUnit.MILLISECONDS);
+        System.out.format("****Test Data****\nName: %s\nTime: %s ms\n*****************\n", nameT, timeT);
+        testMap.put(nameT, timeT);
+    }
+    @AfterClass
+    public static void resultTest(){
+        System.out.println("**********Total Test Data***********");
+        for (Map.Entry<String, Long> infoT:testMap.entrySet()){
+            System.out.format("%s — %s\n",infoT.getKey(), infoT.getValue());
+        }
+        System.out.println("************************************");
+    }
 
     @Test
     public void delete() {
